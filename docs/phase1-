@@ -1,0 +1,40 @@
+conda create -n projrag python=3.11 -y
+
+# 激活环境
+conda activate projrag
+
+# 顺手把 pip 更新到最新，确保后续拉取包的依赖解析是准确的
+pip install --upgrade pip
+
+# 1. 安装 gRPC 核心通信框架与官方编译工具
+pip install grpcio grpcio-tools protobuf
+
+# 2. 安装 Milvus 单机轻量版 (Milvus Lite) 以及模型支持扩展包 (含 BGE-m3)
+pip install "pymilvus[model]" milvus-lite
+
+# 3. 安装 LangChain 的文本处理工具 (用于后续的 Markdown 结构化切分)
+pip install langchain-text-splitters
+
+mkdir proto
+cd proto
+touch retrieval.proto
+python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. retrieval.proto
+
+cd ..
+mkdir data
+cd data
+curl -O https://raw.githubusercontent.com/fastapi/fastapi/master/docs/en/docs/async.md
+cd ..
+
+pip install modelscope
+
+cd scripts; python download_bge.py
+cd ..
+
+如果你在企业里真的嫌纯 Python 跑 BGE 不够快（比如要做亿级数据的实时并发向量化），业界标准做法也不是用 vLLM，而是使用专门为 Encoder 模型打造的高性能推理引擎，比如 HuggingFace TEI (Text Embeddings Inference) 或者 Infinity。它们使用 Rust 编写，专门针对向量化和重排（Rerank）进行了底层加速。
+
+pip install torch torchvision
+
+pip install transformers==4.44.2
+
+python ingest_data.py
