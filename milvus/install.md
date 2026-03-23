@@ -1,3 +1,5 @@
+https://www.cnblogs.com/hibpm/p/18908446
+
 wget https://github.com/milvus-io/milvus/releases/download/v2.5.4/milvus-standalone-docker-compose.yml -O docker-compose.yml
 
 docker compose up -d
